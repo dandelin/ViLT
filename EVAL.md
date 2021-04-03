@@ -3,7 +3,7 @@ The results will vary a bit since we do a batched-inference, which yields padded
 
 ## Evaluate VQAv2
 ```bash
-python run.py with data_root=<ARROW_ROOT> num_gpus=<NUM_GPUS> num_nodes=<NUM_NODES> per_gpu_batchsize=<BS_FITS_YOUR_GPU> task_finetune_vqa_randaug test_only=True load_path="weights/vilt_vqa.ckpt"
+python run.py with data_root=<ARROW_ROOT> num_gpus=<NUM_GPUS> num_nodes=<NUM_NODES> per_gpu_batchsize=<BS_FITS_YOUR_GPU> task_finetune_vqa_randaug test_only=True load_path="<YOUR_WEIGHT_ROOT>/vilt_vqa.ckpt"
 
 ex)
 python run.py with data_root=/data2/dsets/dataset num_gpus=8 num_nodes=1 per_gpu_batchsize=64 task_finetune_vqa_randaug test_only=True load_path="weights/vilt_vqa.ckpt"
@@ -14,7 +14,7 @@ output > This script will generate `result/vqa_submit_vilt_vqa.json`, you can up
 
 ## Evaluate NLVR2
 ```bash
-python run.py with data_root=<ARROW_ROOT> num_gpus=<NUM_GPUS> num_nodes=<NUM_NODES> per_gpu_batchsize=<BS_FITS_YOUR_GPU> task_finetune_nlvr2_randaug test_only=True load_path="weights/vilt_nlvr2.ckpt"
+python run.py with data_root=<ARROW_ROOT> num_gpus=<NUM_GPUS> num_nodes=<NUM_NODES> per_gpu_batchsize=<BS_FITS_YOUR_GPU> task_finetune_nlvr2_randaug test_only=True load_path="<YOUR_WEIGHT_ROOT>/vilt_nlvr2.ckpt"
 
 ex)
 python run.py with data_root=/data2/dsets/dataset num_gpus=8 num_nodes=1 per_gpu_batchsize=64 task_finetune_nlvr2_randaug test_only=True load_path="weights/vilt_nlvr2.ckpt"
@@ -37,9 +37,9 @@ INFO - ViLT - Completed after 0:01:31
 
 ## Evaluate COCO IR/TR
 ```bash
-python run.py with data_root=<ARROW_ROOT> num_gpus=<NUM_GPUS> num_nodes=<NUM_NODES> per_gpu_batchsize=<BS_FITS_YOUR_GPU> task_finetune_irtr_coco_randaug test_only=True load_path="weights/vilt_irtr_coco.ckpt"
+python run.py with data_root=<ARROW_ROOT> num_gpus=<NUM_GPUS> num_nodes=<NUM_NODES> per_gpu_batchsize=<BS_FITS_YOUR_GPU> task_finetune_irtr_coco_randaug test_only=True load_path="<YOUR_WEIGHT_ROOT>/vilt_irtr_coco.ckpt"
 
-or you can evaluate zero-shot performance just simply using "weights/vilt_200k_mlm_itm.ckpt" instead.
+or you can evaluate zero-shot performance just simply using "<YOUR_WEIGHT_ROOT>/vilt_200k_mlm_itm.ckpt" instead.
 
 ex)
 python run.py with data_root=/data2/dsets/dataset num_gpus=8 num_nodes=1 per_gpu_batchsize=4 task_finetune_irtr_coco_randaug test_only=True load_path="weights/vilt_irtr_coco.ckpt"
@@ -58,7 +58,9 @@ INFO - ViLT - Completed after 1 day, 10:59:12
 
 ## Evaluate F30K IR/TR
 ```bash
-python run.py with data_root=<ARROW_ROOT> num_gpus=<NUM_GPUS> num_nodes=<NUM_NODES> per_gpu_batchsize=<BS_FITS_YOUR_GPU> task_finetune_irtr_f30k_randaug test_only=True load_path="weights/vilt_irtr_f30k.ckpt"
+python run.py with data_root=<ARROW_ROOT> num_gpus=<NUM_GPUS> num_nodes=<NUM_NODES> per_gpu_batchsize=<BS_FITS_YOUR_GPU> task_finetune_irtr_f30k_randaug test_only=True load_path="<YOUR_WEIGHT_ROOT>/vilt_irtr_f30k.ckpt"
+
+or you can evaluate zero-shot performance just simply using "<YOUR_WEIGHT_ROOT>/vilt_200k_mlm_itm.ckpt" instead.
 
 ex)
 python run.py with data_root=/data2/dsets/dataset num_gpus=8 num_nodes=1 per_gpu_batchsize=4 task_finetune_irtr_f30k_randaug test_only=True load_path="weights/vilt_irtr_f30k.ckpt"

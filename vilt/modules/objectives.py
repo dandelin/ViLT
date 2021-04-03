@@ -14,7 +14,7 @@ from vilt.modules.dist_utils import all_gather
 
 
 def cost_matrix_cosine(x, y, eps=1e-5):
-    """ Compute cosine distnace across every pairs of x, y (batched)
+    """Compute cosine distnace across every pairs of x, y (batched)
     [B, L_x, D] [B, L_y, D] -> [B, Lx, Ly]"""
     assert x.dim() == y.dim()
     assert x.size(0) == y.size(0)
@@ -130,7 +130,9 @@ def compute_mpp(pl_module, batch):
     mpp_labels = infer["image_labels"]
 
     mpp_loss = F.cross_entropy(
-        mpp_logits.view(-1, 256), mpp_labels.view(-1), ignore_index=-100,
+        mpp_logits.view(-1, 256),
+        mpp_labels.view(-1),
+        ignore_index=-100,
     )
 
     ret = {

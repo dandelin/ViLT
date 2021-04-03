@@ -13,9 +13,6 @@ pip install -r requirements.txt
 pip install -e .
 ```
 
-## Dataset Preparation
-See [`DATA.md`](DATA.md)
-
 ## Download Pretrained Weights
 We provide five pretrained weights
 1. ViLT-B/32 Pretrained with MLM+ITM for 200k steps on GCC+SBU+COCO+VG (ViLT-B/32 200k) [link](https://www.dropbox.com/s/5b3slhy5uvdw8k0/vilt_200k_mlm_itm.ckpt?dl=0)
@@ -23,6 +20,18 @@ We provide five pretrained weights
 3. ViLT-B/32 200k finetuned on NLVR2 [link](https://www.dropbox.com/s/vzzh4ag1jchk1wv/vilt_nlvr2.ckpt?dl=0)
 4. ViLT-B/32 200k finetuned on COCO IR/TR [link](https://www.dropbox.com/s/dx3id644873fcgn/vilt_irtr_coco.ckpt?dl=0)
 5. ViLT-B/32 200k finetuned on F30K IR/TR [link](https://www.dropbox.com/s/asidty0d4a1p2f4/vilt_irtr_f30k.ckpt?dl=0)
+
+## Out-of-the-box MLM + Visualization Demo
+```bash
+pip install gradio==1.6.4
+python demo.py with num_gpus=<0 if you have no gpus else 1> load_path="<YOUR_WEIGHT_ROOT>/vilt_200k_mlm_itm.ckpt"
+
+ex)
+python demo.py with num_gpus=0 load_path="weights/vilt_200k_mlm_itm.ckpt"
+```
+
+## Dataset Preparation
+See [`DATA.md`](DATA.md)
 
 ## Train New Models
 See [`TRAIN.md`](TRAIN.md)
