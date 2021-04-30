@@ -30,6 +30,15 @@ ex)
 python demo.py with num_gpus=0 load_path="weights/vilt_200k_mlm_itm.ckpt"
 ```
 
+## Out-of-the-box VQA Demo
+```bash
+pip install gradio==1.6.4
+python demo_vqa.py with num_gpus=<0 if you have no gpus else 1> load_path="<YOUR_WEIGHT_ROOT>/vilt_vqa.ckpt" test_only=True
+
+ex)
+python demo_vqa.py with num_gpus=0 load_path="weights/vilt_vqa.ckpt" test_only=True
+```
+
 ## Dataset Preparation
 See [`DATA.md`](DATA.md)
 

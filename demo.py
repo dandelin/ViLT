@@ -153,15 +153,15 @@ def main(_config):
 
     inputs = [
         gr.inputs.Textbox(
-            label="A url of an image.",
+            label="Url of an image.",
             lines=5,
         ),
-        gr.inputs.Textbox(label="A caption with [MASK] tokens to be filled.", lines=5),
+        gr.inputs.Textbox(label="Caption with [MASK] tokens to be filled.", lines=5),
         gr.inputs.Slider(
             minimum=0,
             maximum=38,
             step=1,
-            label="A index of token for heatmap visualization (ignored if zero)",
+            label="Index of token for heatmap visualization (ignored if zero)",
         ),
     ]
     outputs = [
