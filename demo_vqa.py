@@ -95,11 +95,19 @@ def main(_config):
         examples=[
             [
                 "https://s3.geograph.org.uk/geophotos/06/21/24/6212487_1cca7f3f_1024x1024.jpg",
-                "Is the sky cloudy?",
+                "What is the color of the flower?",
             ],
             [
-                "https://s3.geograph.org.uk/geophotos/06/21/24/6212487_1cca7f3f_1024x1024.jpg",
-                "Color of flower?",
+                "https://computing.ece.vt.edu/~harsh/visualAttention/ProjectWebpage/Figures/vqa_1.png",
+                "What is the mustache made of?",
+            ],
+            [
+                "https://computing.ece.vt.edu/~harsh/visualAttention/ProjectWebpage/Figures/vqa_2.png",
+                "How many slices of pizza are there?",
+            ],
+            [
+                "https://computing.ece.vt.edu/~harsh/visualAttention/ProjectWebpage/Figures/vqa_3.png",
+                "Does it appear to be rainy?",
             ],
         ],
     )
