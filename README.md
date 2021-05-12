@@ -1,6 +1,6 @@
 # ViLT
 
-Code for the paper: "ViLT: Vision-and-Language Transformer Without Convolution or Region Supervision"
+Code for the ICML 2021 paper: "ViLT: Vision-and-Language Transformer Without Convolution or Region Supervision"
 
 ---
 <p align="center">
@@ -15,11 +15,11 @@ pip install -e .
 
 ## Download Pretrained Weights
 We provide five pretrained weights
-1. ViLT-B/32 Pretrained with MLM+ITM for 200k steps on GCC+SBU+COCO+VG (ViLT-B/32 200k) [link](https://www.dropbox.com/s/5b3slhy5uvdw8k0/vilt_200k_mlm_itm.ckpt?dl=0)
-2. ViLT-B/32 200k finetuned on VQAv2 [link](https://www.dropbox.com/s/fy8jkj71bxwqett/vilt_vqa.ckpt?dl=0)
-3. ViLT-B/32 200k finetuned on NLVR2 [link](https://www.dropbox.com/s/vzzh4ag1jchk1wv/vilt_nlvr2.ckpt?dl=0)
-4. ViLT-B/32 200k finetuned on COCO IR/TR [link](https://www.dropbox.com/s/dx3id644873fcgn/vilt_irtr_coco.ckpt?dl=0)
-5. ViLT-B/32 200k finetuned on F30K IR/TR [link](https://www.dropbox.com/s/asidty0d4a1p2f4/vilt_irtr_f30k.ckpt?dl=0)
+1. ViLT-B/32 Pretrained with MLM+ITM for 200k steps on GCC+SBU+COCO+VG (ViLT-B/32 200k) [link](https://github.com/dandelin/ViLT/releases/download/200k/vilt_200k_mlm_itm.ckpt)
+2. ViLT-B/32 200k finetuned on VQAv2 [link](https://github.com/dandelin/ViLT/releases/download/200k/vilt_vqa.ckpt)
+3. ViLT-B/32 200k finetuned on NLVR2 [link](https://github.com/dandelin/ViLT/releases/download/200k/vilt_nlvr2.ckpt)
+4. ViLT-B/32 200k finetuned on COCO IR/TR [link](https://github.com/dandelin/ViLT/releases/download/200k/vilt_irtr_coco.ckpt)
+5. ViLT-B/32 200k finetuned on F30K IR/TR [link](https://github.com/dandelin/ViLT/releases/download/200k/vilt_irtr_f30k.ckpt)
 
 ## Out-of-the-box MLM + Visualization Demo
 ```bash

@@ -19,6 +19,7 @@ from vilt.modules import ViLTransformerSS
 from vilt.transforms import pixelbert_transform
 from vilt.datamodules.datamodule_base import get_pretrained_tokenizer
 
+
 @ex.automain
 def main(_config):
     _config = copy.deepcopy(_config)
@@ -35,7 +36,9 @@ def main(_config):
     }
     tokenizer = get_pretrained_tokenizer(_config["tokenizer"])
 
-    with urllib.request.urlopen("https://dl.dropboxusercontent.com/s/otya4i5sagt4f5p/vqa_dict.json") as url:
+    with urllib.request.urlopen(
+        "https://github.com/dandelin/ViLT/releases/download/200k/vqa_dict.json"
+    ) as url:
         id2ans = json.loads(url.read().decode())
 
     _config.update(
@@ -63,13 +66,13 @@ def main(_config):
         batch = {"text": [text], "image": [img]}
 
         with torch.no_grad():
-            encoded = tokenizer(batch['text'])
+            encoded = tokenizer(batch["text"])
             batch["text_ids"] = torch.tensor(encoded["input_ids"]).to(device)
             batch["text_labels"] = torch.tensor(encoded["input_ids"]).to(device)
             batch["text_masks"] = torch.tensor(encoded["attention_mask"]).to(device)
             infer = model.infer(batch)
-            vqa_logits = model.vqa_classifier(infer['cls_feats'])
-            
+            vqa_logits = model.vqa_classifier(infer["cls_feats"])
+
         answer = id2ans[str(vqa_logits.argmax().item())]
 
         return [np.array(image), answer]
