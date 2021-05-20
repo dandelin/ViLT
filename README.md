@@ -22,6 +22,10 @@ We provide five pretrained weights
 5. ViLT-B/32 200k finetuned on F30K IR/TR [link](https://github.com/dandelin/ViLT/releases/download/200k/vilt_irtr_f30k.ckpt)
 
 ## Out-of-the-box MLM + Visualization Demo
+<p align="center">
+  <img align="middle" src="./assets/mlm.png" alt="MLM + Visualization"/>
+</p>
+
 ```bash
 pip install gradio==1.6.4
 python demo.py with num_gpus=<0 if you have no gpus else 1> load_path="<YOUR_WEIGHT_ROOT>/vilt_200k_mlm_itm.ckpt"
@@ -31,6 +35,10 @@ python demo.py with num_gpus=0 load_path="weights/vilt_200k_mlm_itm.ckpt"
 ```
 
 ## Out-of-the-box VQA Demo
+<p align="center">
+  <img align="middle" src="./assets/vqa.png" alt="VQA"/>
+</p>
+
 ```bash
 pip install gradio==1.6.4
 python demo_vqa.py with num_gpus=<0 if you have no gpus else 1> load_path="<YOUR_WEIGHT_ROOT>/vilt_vqa.ckpt" test_only=True
