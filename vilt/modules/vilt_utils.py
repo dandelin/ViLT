@@ -172,7 +172,7 @@ def set_task(pl_module):
 
     sampling_pools = list()
     for k, v in pl_module.hparams.config["loss_names"].items():
-        sampling_pools.extend([k] * v)
+        sampling_pools.extend([k] * int(v))
 
     current_tasks = [random.choice(sampling_pools)]
     picked = all_gather(current_tasks)
@@ -267,7 +267,9 @@ def set_schedule(pl_module):
 
     if decay_power == "cosine":
         scheduler = get_cosine_schedule_with_warmup(
-            optimizer, num_warmup_steps=warmup_steps, num_training_steps=max_steps,
+            optimizer,
+            num_warmup_steps=warmup_steps,
+            num_training_steps=max_steps,
         )
     else:
         scheduler = get_polynomial_decay_schedule_with_warmup(
