@@ -174,9 +174,10 @@ def set_task(pl_module):
     for k, v in pl_module.hparams.config["loss_names"].items():
         sampling_pools.extend([k] * int(v))
 
-    current_tasks = [random.choice(sampling_pools)]
-    picked = all_gather(current_tasks)
-    pl_module.current_tasks = picked[0]
+    g = torch.Generator()
+    g.manual_seed(pl_module.global_step)
+    idx = torch.randperm(len(sampling_pools), generator=g)[0]
+    pl_module.current_tasks = sampling_pools[idx]
 
 
 def set_schedule(pl_module):
