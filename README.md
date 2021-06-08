@@ -4,7 +4,7 @@ Code for the ICML 2021 (long talk) paper: "[ViLT: Vision-and-Language Transforme
 
 ---
 <p align="center">
-  <img align="middle" src="./assets/figure.png" alt="The main figure"/>
+  <img align="middle" src="./assets/vilt.png" alt="The main figure"/>
 </p>
 
 ## Install
