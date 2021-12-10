@@ -148,8 +148,6 @@ make_arrow(root, arrows_root)
 ```
 
 ## NLVR2
-http://bryanplummer.com/Flickr30kEntities/
-
 Clone the [repository](https://github.com/lil-lab/nlvr) and sign the [request form](https://goo.gl/forms/yS29stWnFWzrDBFH3) to download the images.
 
     root
