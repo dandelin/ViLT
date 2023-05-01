@@ -29,7 +29,6 @@ class BaseDataset(torch.utils.data.Dataset):
         """
         assert len(transform_keys) >= 1
         super().__init__()
-
         self.transforms = keys_to_transforms(transform_keys, size=image_size)
         self.text_column_name = text_column_name
         self.names = names
@@ -38,8 +37,8 @@ class BaseDataset(torch.utils.data.Dataset):
         self.draw_false_text = draw_false_text
         self.image_only = image_only
         self.data_dir = data_dir
-
         if len(names) != 0:
+            print(f"Attempting to load the following dataset files: {[f'{data_dir}/{name}.arrow' for name in names]}")
             tables = [
                 pa.ipc.RecordBatchFileReader(
                     pa.memory_map(f"{data_dir}/{name}.arrow", "r")
@@ -47,12 +46,29 @@ class BaseDataset(torch.utils.data.Dataset):
                 for name in names
                 if os.path.isfile(f"{data_dir}/{name}.arrow")
             ]
-
-            self.table_names = list()
+            
+            self.table = list()
             for i, name in enumerate(names):
-                self.table_names += [name] * len(tables[i])
+                if i < len(tables):
+                    self.table += [name] * len(tables[i])
+                else:
+                    print(f"Warning: Skipping {name} as the index is out of range in tables.")
 
-            self.table = pa.concat_tables(tables, promote=True)
+            if self.table is None:
+                print("Error: The table is not properly loaded. Please check the dataset files and their paths.")
+            if len(tables) > 0:
+                self.table = pa.concat_tables(tables, promote=True)
+            else:
+                print("Warning: No tables to concatenate. Check if dataset is properly loaded.")
+                self.table = None
+            
+            # if self.table is not None:
+            #     print("Column names in the table schema:", [field.name for field in self.table.schema])
+            #     print("Sample answer_scores:")
+            #     for i in range(min(10, len(self.table))):
+            #         print(f"Row {i}: {self.table['answer_scores'][i].as_py()}")
+
+
             if text_column_name != "":
                 self.text_column_name = text_column_name
                 self.all_texts = self.table[text_column_name].to_pandas().tolist()
@@ -62,6 +78,22 @@ class BaseDataset(torch.utils.data.Dataset):
                     else self.all_texts
                 )
             else:
+                self.all_texts = list()
+        else:
+            self.all_texts = list()
+        
+
+        if self.table is not None and text_column_name != "":
+            self.text_column_name = text_column_name
+            try:
+                self.all_texts = self.table[text_column_name].to_pandas().tolist()
+                self.all_texts = (
+                    [list(set(texts)) for texts in self.all_texts]
+                    if remove_duplicate
+                    else self.all_texts
+                )
+            except KeyError:
+                print(f"Error: The text column '{text_column_name}' was not found in the table.")
                 self.all_texts = list()
         else:
             self.all_texts = list()
@@ -77,6 +109,8 @@ class BaseDataset(torch.utils.data.Dataset):
         else:
             for i in range(len(self.table)):
                 self.index_mapper[i] = (i, None)
+        print("Length of tables:", [len(t) for t in tables])
+
 
     @property
     def corpus(self):

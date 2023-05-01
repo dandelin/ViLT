@@ -6,6 +6,8 @@ import vilt.modules.vision_transformer as vit
 from transformers.models.bert.modeling_bert import BertConfig, BertEmbeddings
 from vilt.modules import heads, objectives, vilt_utils
 
+def contains_nan(tensor):
+    return torch.any(torch.isnan(tensor))
 
 class ViLTransformerSS(pl.LightningModule):
     def __init__(self, config):
@@ -73,6 +75,17 @@ class ViLTransformerSS(pl.LightningModule):
                 nn.Linear(hs * 2, vs),
             )
             self.vqa_classifier.apply(objectives.init_weights)
+        
+        if self.hparams.config["loss_names"]["gqa"] > 0:
+            gqa_label_size = self.hparams.config["gqa_label_size"]
+
+            self.gqa_classifier = nn.Sequential(
+                nn.Linear(hs, hs * 2),
+                nn.LayerNorm(hs * 2),
+                nn.GELU(),
+                nn.Linear(hs * 2, gqa_label_size),
+            )
+            self.gqa_classifier.apply(objectives.init_weights)
 
         if self.hparams.config["loss_names"]["nlvr2"] > 0:
             self.nlvr2_classifier = nn.Sequential(
@@ -120,7 +133,6 @@ class ViLTransformerSS(pl.LightningModule):
             imgkey = f"image_{image_token_type_idx - 1}"
         else:
             imgkey = "image"
-
         do_mlm = "_mlm" if mask_text else ""
         text_ids = batch[f"text_ids{do_mlm}"]
         text_labels = batch[f"text_labels{do_mlm}"]
@@ -180,7 +192,6 @@ class ViLTransformerSS(pl.LightningModule):
             "text_masks": text_masks,
             "patch_index": patch_index,
         }
-
         return ret
 
     def forward(self, batch):
@@ -204,6 +215,9 @@ class ViLTransformerSS(pl.LightningModule):
         # Visual Question Answering
         if "vqa" in self.current_tasks:
             ret.update(objectives.compute_vqa(self, batch))
+        
+        if "gqa" in self.current_tasks:
+            ret.update(objectives.compute_gqa(self, batch))
 
         # Natural Language for Visual Reasoning 2
         if "nlvr2" in self.current_tasks:
@@ -212,7 +226,6 @@ class ViLTransformerSS(pl.LightningModule):
         # Image Retrieval and Text Retrieval
         if "irtr" in self.current_tasks:
             ret.update(objectives.compute_irtr(self, batch))
-
         return ret
 
     def training_step(self, batch, batch_idx):
@@ -220,6 +233,15 @@ class ViLTransformerSS(pl.LightningModule):
         output = self(batch)
         total_loss = sum([v for k, v in output.items() if "loss" in k])
 
+        questions = batch["text"]
+        logits = output["gqa_logits"]
+        p = torch.argmax(logits, dim=-1)
+        d = self.trainer.datamodule.dm_dicts["gqa"].id2answer
+        a = batch['gqa_label']
+        preds = [d[pred.item()] for pred in p]
+        answers = [d[pred] for pred in a]
+        # for i, j, k in zip(questions, preds, answers):
+        #     print(f'Question: {i}\nPred: {j}, Actual: {k}')
         return total_loss
 
     def training_epoch_end(self, outs):
@@ -239,14 +261,22 @@ class ViLTransformerSS(pl.LightningModule):
 
         if self.hparams.config["loss_names"]["vqa"] > 0:
             ret.update(objectives.vqa_test_step(self, batch, output))
+        
+        if self.hparams.config["loss_names"]["gqa"] > 0:
+            ret.update(objectives.gqa_test_step(self, batch, output))
+
 
         return ret
 
     def test_epoch_end(self, outs):
         model_name = self.hparams.config["load_path"].split("/")[-1][:-5]
-
+        print(model_name)
         if self.hparams.config["loss_names"]["vqa"] > 0:
             objectives.vqa_test_wrapup(outs, model_name)
+
+        if self.hparams.config["loss_names"]["gqa"] > 0:
+            objectives.gqa_test_wrapup(outs, model_name)
+
         vilt_utils.epoch_wrapup(self)
 
     def configure_optimizers(self):
