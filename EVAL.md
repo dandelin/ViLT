@@ -1,6 +1,15 @@
 # Evaluation
 The results will vary a bit since we do a batched-inference, which yields padded image batch that would be inconsistently embedded while performing linear image patch projection.
 
+## Evaluate GQA
+```bash
+python run.py with data_root=<ARROW_ROOT> num_gpus=<NUM_GPUS> num_nodes=<NUM_NODES> per_gpu_batchsize=<BS_FITS_YOUR_GPU> task_finetune_gqa_randaug test_only=True precision=32 load_path="<YOUR_WEIGHT_ROOT>/vilt_gqa.ckpt"
+
+ex)
+python run.py with data_root=/data2/dsets/dataset num_gpus=8 num_nodes=1 per_gpu_batchsize=64 task_finetune_gqa_randaug test_only=True precision=32 load_path="weights/vilt_gqa.ckpt"
+
+output > This script will generate `result/gqa_submit_last.json`
+```
 ## Evaluate VQAv2
 ```bash
 python run.py with data_root=<ARROW_ROOT> num_gpus=<NUM_GPUS> num_nodes=<NUM_NODES> per_gpu_batchsize=<BS_FITS_YOUR_GPU> task_finetune_vqa_randaug test_only=True precision=32 load_path="<YOUR_WEIGHT_ROOT>/vilt_vqa.ckpt"
