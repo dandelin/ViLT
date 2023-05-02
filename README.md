@@ -20,6 +20,7 @@ We provide five pretrained weights
 3. ViLT-B/32 200k finetuned on NLVR2 [link](https://github.com/dandelin/ViLT/releases/download/200k/vilt_nlvr2.ckpt)
 4. ViLT-B/32 200k finetuned on COCO IR/TR [link](https://github.com/dandelin/ViLT/releases/download/200k/vilt_irtr_coco.ckpt)
 5. ViLT-B/32 200k finetuned on F30K IR/TR [link](https://github.com/dandelin/ViLT/releases/download/200k/vilt_irtr_f30k.ckpt)
+6. ViLT-B/32 200k finetuned on GQA [link](https://github.com/keshavshivkumar/ViLT/releases/download/vilt_gqa/vilt_gqa.ckpt)
 
 ## Out-of-the-box MLM + Visualization Demo
 <p align="center">
