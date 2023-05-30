@@ -11,7 +11,6 @@ from vilt.datamodules.multitask_datamodule import MTDataModule
 def main(_config):
     _config = copy.deepcopy(_config)
     pl.seed_everything(_config["seed"])
-
     dm = MTDataModule(_config, dist=True)
 
     model = ViLTransformerSS(_config)
@@ -29,7 +28,6 @@ def main(_config):
         _config["log_dir"],
         name=f'{exp_name}_seed{_config["seed"]}_from_{_config["load_path"].split("/")[-1][:-5]}',
     )
-
     lr_callback = pl.callbacks.LearningRateMonitor(logging_interval="step")
     callbacks = [checkpoint_callback, lr_callback]
 
@@ -44,7 +42,6 @@ def main(_config):
     )
 
     max_steps = _config["max_steps"] if _config["max_steps"] is not None else None
-
     trainer = pl.Trainer(
         gpus=_config["num_gpus"],
         num_nodes=_config["num_nodes"],

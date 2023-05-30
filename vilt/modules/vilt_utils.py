@@ -8,7 +8,7 @@ from transformers import (
 )
 from vilt.modules.dist_utils import all_gather
 from vilt.modules.objectives import compute_irtr_recall
-from vilt.gadgets.my_metrics import Accuracy, VQAScore, Scalar
+from vilt.gadgets.my_metrics import Accuracy, VQAScore, GQAScore, Scalar
 
 
 def set_metrics(pl_module):
@@ -18,6 +18,9 @@ def set_metrics(pl_module):
                 continue
             if k == "vqa":
                 setattr(pl_module, f"{split}_vqa_score", VQAScore())
+                setattr(pl_module, f"{split}_{k}_loss", Scalar())
+            elif k == "gqa":
+                setattr(pl_module, f"{split}_gqa_score", GQAScore())
                 setattr(pl_module, f"{split}_{k}_loss", Scalar())
             elif k == "nlvr2":
                 if split == "train":
@@ -75,6 +78,15 @@ def epoch_wrapup(pl_module):
         value = 0
 
         if loss_name == "vqa":
+            value = getattr(pl_module, f"{phase}_{loss_name}_score").compute()
+            pl_module.log(f"{loss_name}/{phase}/score_epoch", value)
+            getattr(pl_module, f"{phase}_{loss_name}_score").reset()
+            pl_module.log(
+                f"{loss_name}/{phase}/loss_epoch",
+                getattr(pl_module, f"{phase}_{loss_name}_loss").compute(),
+            )
+            getattr(pl_module, f"{phase}_{loss_name}_loss").reset()
+        elif loss_name == "gqa":
             value = getattr(pl_module, f"{phase}_{loss_name}_score").compute()
             pl_module.log(f"{loss_name}/{phase}/score_epoch", value)
             getattr(pl_module, f"{phase}_{loss_name}_score").reset()

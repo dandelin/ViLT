@@ -2,7 +2,6 @@ from sacred import Experiment
 
 ex = Experiment("ViLT")
 
-
 def _loss_names(d):
     ret = {
         "itm": 0,
@@ -11,6 +10,7 @@ def _loss_names(d):
         "vqa": 0,
         "nlvr2": 0,
         "irtr": 0,
+        "gqa": 0,
     }
     ret.update(d)
     return ret
@@ -35,6 +35,7 @@ def config():
 
     # Text Setting
     vqav2_label_size = 3129
+    gqa_label_size = 1878
     max_text_len = 40
     tokenizer = "bert-base-uncased"
     vocab_size = 30522
@@ -77,7 +78,7 @@ def config():
     num_gpus = 1
     num_nodes = 1
     load_path = ""
-    num_workers = 8
+    num_workers = 4
     precision = 16
 
 
@@ -170,6 +171,35 @@ def task_finetune_vqa_randaug():
     datasets = ["vqa"]
     train_transform_keys = ["pixelbert_randaug"]
     loss_names = _loss_names({"vqa": 1})
+    batch_size = 256
+    max_epoch = 10
+    max_steps = None
+    warmup_steps = 0.1
+    draw_false_image = 0
+    learning_rate = 1e-4
+    val_check_interval = 0.1
+    lr_mult = 10
+
+@ex.named_config
+def task_finetune_gqa():
+    exp_name = "finetune_gqa"
+    datasets = ["gqa"]
+    loss_names = _loss_names({"gqa": 1})
+    batch_size = 256
+    max_epoch = 10
+    max_steps = None
+    warmup_steps = 0.1
+    draw_false_image = 0
+    learning_rate = 1e-4
+    val_check_interval = 0.1
+    lr_mult = 10
+
+@ex.named_config
+def task_finetune_gqa_randaug():
+    exp_name = "finetune_gqa_randaug"
+    datasets = ["gqa"]
+    train_transform_keys = ["pixelbert_randaug"]
+    loss_names = _loss_names({"gqa": 1})
     batch_size = 256
     max_epoch = 10
     max_steps = None

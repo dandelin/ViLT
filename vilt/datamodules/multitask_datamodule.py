@@ -32,7 +32,7 @@ class MTDataModule(LightningDataModule):
     def setup(self, stage):
         for dm in self.dms:
             dm.setup(stage)
-
+            
         self.train_dataset = ConcatDataset([dm.train_dataset for dm in self.dms])
         self.val_dataset = ConcatDataset([dm.val_dataset for dm in self.dms])
         self.test_dataset = ConcatDataset([dm.test_dataset for dm in self.dms])

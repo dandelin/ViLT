@@ -1,4 +1,5 @@
 import torch
+import os
 
 from pytorch_lightning import LightningDataModule
 from torch.utils.data import DataLoader
@@ -132,17 +133,14 @@ class BaseDataModule(LightningDataModule):
             image_only=self.image_only,
         )
 
-    def setup(self, stage):
-        if not self.setup_flag:
+    def setup(self, stage=None):
+        if stage == "fit" or stage == "test" or stage is None:
             self.set_train_dataset()
-            self.set_val_dataset()
-            self.set_test_dataset()
-
             self.train_dataset.tokenizer = self.tokenizer
+            self.set_val_dataset()
             self.val_dataset.tokenizer = self.tokenizer
+            self.set_test_dataset()
             self.test_dataset.tokenizer = self.tokenizer
-
-            self.setup_flag = True
 
     def train_dataloader(self):
         loader = DataLoader(

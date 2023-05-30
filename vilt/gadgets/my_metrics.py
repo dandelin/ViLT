@@ -67,3 +67,30 @@ class VQAScore(Metric):
 
     def compute(self):
         return self.score / self.total
+
+class GQAScore(Metric):
+    def __init__(self, dist_sync_on_step=False):
+        super().__init__(dist_sync_on_step=dist_sync_on_step)
+        self.add_state("score", default=torch.tensor(0.0), dist_reduce_fx="sum")
+        self.add_state("total", default=torch.tensor(0.0), dist_reduce_fx="sum")
+
+    def update(self, logits, target):
+        logits, target = (
+            logits.detach().float().to(self.score.device),
+            target.detach().float().to(self.score.device),
+        )
+        logits = torch.max(logits, 1)[1]
+        one_hots = torch.zeros(*target.size()).to(target)
+        one_hots.scatter_(1, logits.view(-1, 1), 1)
+        scores = one_hots * target
+        # print(f'Target: {target}')
+        # print(f'One Hots: {one_hots}')
+        # print(f'Scores: {scores}')
+
+        self.score += scores.sum()
+        self.total += len(logits)
+        # print(self.score)
+
+
+    def compute(self):
+        return self.score / self.total

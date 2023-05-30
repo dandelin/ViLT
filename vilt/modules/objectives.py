@@ -335,6 +335,41 @@ def compute_vqa(pl_module, batch):
 
     return ret
 
+def compute_gqa(pl_module, batch):
+    infer = pl_module.infer(batch, mask_text=False, mask_image=False)
+    gqa_logits = pl_module.gqa_classifier(infer["cls_feats"])
+    gqa_targets = torch.zeros(
+        len(gqa_logits), pl_module.hparams.config["gqa_label_size"]
+    ).to(pl_module.device)
+
+    gqa_labels = batch["gqa_label"]
+    gqa_scores = batch["gqa_scores"]
+    for i, _label in enumerate(gqa_labels):
+        gqa_targets[i, _label] = torch.tensor(gqa_scores[i], device=pl_module.device)
+
+    gqa_loss = (
+        F.binary_cross_entropy_with_logits(gqa_logits, gqa_targets)
+        * gqa_targets.shape[1]
+    )
+
+    ret = {
+        "gqa_loss": gqa_loss,
+        "gqa_logits": gqa_logits,
+        "gqa_targets": gqa_targets,
+        "gqa_label": gqa_labels,
+        "gqa_scores": gqa_scores,
+    }
+
+    phase = "train" if pl_module.training else "val"
+    loss = getattr(pl_module, f"{phase}_gqa_loss")(ret["gqa_loss"])
+    score = getattr(pl_module, f"{phase}_gqa_score")(
+        ret["gqa_logits"], ret["gqa_targets"]
+    )
+    pl_module.log(f"gqa/{phase}/loss", loss)
+    pl_module.log(f"gqa/{phase}/score", score)
+
+    return ret
+
 
 def compute_nlvr2(pl_module, batch):
     infer1 = pl_module.infer(
@@ -588,6 +623,21 @@ def vqa_test_step(pl_module, batch, output):
     qids = batch["qid"]
     return {"qids": qids, "preds": vqa_preds}
 
+def gqa_test_step(pl_module, batch, output):
+    id2answer = (
+        pl_module.trainer.datamodule.dm_dicts["gqa_trainval"].id2answer
+        if "gqa_trainval" in pl_module.trainer.datamodule.dm_dicts
+        else pl_module.trainer.datamodule.dm_dicts["gqa"].id2answer
+    )
+    gqa_logits = output["gqa_logits"]
+    gqa_preds = gqa_logits.argmax(dim=-1)
+    gqa_preds = [id2answer[pred.item()] for pred in gqa_preds]
+    questions = batch["text"]
+    qids = batch["qid"]
+    for q, a in zip(questions, gqa_preds):
+        print(f'Question: {q}, Answer: {a}')
+    return {"qids": qids, "preds": gqa_preds}
+
 
 def arc_test_step(pl_module, batch, output):
     return output
@@ -620,6 +670,34 @@ def vqa_test_wrapup(outs, model_name):
 
     torch.distributed.barrier()
     os.remove(f"vqa_submit_{rank}.json")
+
+def gqa_test_wrapup(outs, model_name):
+    rank = torch.distributed.get_rank()
+    qids, preds = list(), list()
+    for out in outs:
+        qids += out["qids"]
+        preds += out["preds"]
+
+    rets = list()
+    for qid, pred in zip(qids, preds):
+        rets.append({"question_id": qid, "answer": pred})
+    with open(f"gqa_submit_{rank}.json", "w") as fp:
+        json.dump(rets, fp, indent=4)
+
+    torch.distributed.barrier()
+
+    if rank == 0:
+        jsons = list()
+        paths = list(glob.glob("gqa_submit_*.json"))
+        for path in paths:
+            with open(path, "r") as fp:
+                jsons += json.load(fp)
+        os.makedirs("result", exist_ok=True)
+        with open(f"result/gqa_submit_{model_name}.json", "w") as fp:
+            json.dump(jsons, fp, indent=4)
+
+    torch.distributed.barrier()
+    os.remove(f"gqa_submit_{rank}.json")
 
 
 def arc_test_wrapup(outs, caplen, model_name):
